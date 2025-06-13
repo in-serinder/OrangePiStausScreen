@@ -1,5 +1,6 @@
 import json
 import os.path
+from datetime import datetime
 
 import requests
 import jsondeal
@@ -92,17 +93,20 @@ weather_mapping = {
     "未知": "Unknown"
 }
 
+headers = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36'
+}
 
 def getCityCode():
     try:
-        response_citycode = requests.get(f'https://restapi.amap.com/v3/ip?key={_Key}')
+        response_citycode = requests.get(f'https://restapi.amap.com/v3/ip?key={_Key}',headers=headers)
 
         if response_citycode.status_code == 200:
             response_citycode = response_citycode.json()
             return response_citycode['adcode']
 
     except Exception as e:
-        print("No Intneret",e)
+        print("No Intneret (aCode)",e)
         return None
 
 
@@ -110,23 +114,25 @@ def getWeather():
 
     try:
         cityCode = getCityCode()
-        if cityCode is None:
+        if cityCode is None or len(cityCode) == 0:
             cityCode = _cityCode
 
+
         weather = requests.get(
-            f'https://restapi.amap.com/v3/weather/weatherInfo?parameters&city={cityCode}&key={_Key}')
+            f'https://restapi.amap.com/v3/weather/weatherInfo?parameters&city={cityCode}&key={_Key}',headers=headers)
+
 
         if weather.status_code == 200:
             weather = weather.json()
             weather = weather['lives'][0]
-            weathertemp(_cityCode,weather['weather'], weather['temperature'], weather['humidity'])
+            weathertemp(_cityCode,weather['weather'], weather['temperature'], weather['humidity'], weather['reporttime'])
             return weather['weather'], weather['temperature'], weather['humidity']
         else:
             return getWeathertemp()
             # return "Offline", "Offline", "Offline"
 
     except Exception as e:
-        print("No Intneret",e)
+        print("getWeather",e)
         return getWeathertemp()
 
 
@@ -134,12 +140,14 @@ def get_weather_en_description(chinese_term):
     return weather_mapping.get(chinese_term, "Unkow")
 
 
-def weathertemp(citycode,weather,temperature,humidity):
+def weathertemp(citycode,weather,temperature,humidity,reporttime):
     _weather_chahe_json = {
         "cityCode": citycode,
         "weather": weather,
         "temp": temperature,
-        "humidity": humidity
+        "humidity": humidity,
+        "reportime":reporttime,
+        "updateTime": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     }
     try:
         # if not os.path.exists(_weather_chahe):
@@ -157,12 +165,14 @@ def weathertemp(citycode,weather,temperature,humidity):
 
 def getWeathertemp():
     try:
+        if not os.path.exists(_weather_chahe):
+            weathertemp(_cityCode,"ukonw","unknown","unknown")
         with open(_weather_chahe,"r") as file:
             _weather_chahe_json = file.read()
             weather = json.loads(_weather_chahe_json)
             return  weather['weather'], weather['temp'], weather['humidity']
     except Exception as e:
-        print(e)
+        print("gettemp",e)
 
 
 
