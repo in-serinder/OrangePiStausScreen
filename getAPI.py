@@ -1,6 +1,7 @@
 import json
 import os.path
 from datetime import datetime
+import re
 
 import requests
 import jsondeal
@@ -93,6 +94,19 @@ weather_mapping = {
     "未知": "Unknown"
 }
 
+wind_direction_map = {
+    '无风向': 'Calm',
+    '东北': 'Northeast',
+    '东': 'East',
+    '东南': 'Southeast',
+    '南': 'South',
+    '西南': 'Southwest',
+    '西': 'West',
+    '西北': 'Northwest',
+    '北': 'North',
+    '旋转不定': 'Variable',
+}
+
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36'
 }
@@ -118,15 +132,15 @@ def getWeather():
             cityCode = _cityCode
 
 
-        weather = requests.get(
+        respone_weather = requests.get(
             f'https://restapi.amap.com/v3/weather/weatherInfo?parameters&city={cityCode}&key={_Key}',headers=headers)
+        weather = respone_weather.json()
 
+        if respone_weather.status_code == 200 or (not weather['status'] == 0):
 
-        if weather.status_code == 200:
-            weather = weather.json()
             weather = weather['lives'][0]
-            weathertemp(_cityCode,weather['weather'], weather['temperature'], weather['humidity'], weather['reporttime'])
-            return weather['weather'], weather['temperature'], weather['humidity']
+            weathertemp(_cityCode,weather['weather'], weather['temperature'], weather['humidity'], weather['reporttime'],weather['winddirection'],weather['windpower'])
+            return weather['weather'], weather['temperature'], weather['humidity'],weather['winddirection'],weather['windpower'],weather['reporttime']
         else:
             return getWeathertemp()
             # return "Offline", "Offline", "Offline"
@@ -137,15 +151,22 @@ def getWeather():
 
 
 def get_weather_en_description(chinese_term):
-    return weather_mapping.get(chinese_term, "Unkow")
+    return weather_mapping.get(chinese_term, "Unknow")
 
+def get_english_direction(chinese_direction):
+    return wind_direction_map.get(chinese_direction, 'uknow')
 
-def weathertemp(citycode,weather,temperature,humidity,reporttime):
+def extract_numbers(text):
+    return ''.join(re.findall(r'\d+', text))
+
+def weathertemp(citycode,weather,temperature,humidity,reporttime,winddirection,windpower):
     _weather_chahe_json = {
         "cityCode": citycode,
         "weather": weather,
         "temp": temperature,
         "humidity": humidity,
+        "winddirection": winddirection,
+        "windpower": windpower,
         "reportime":reporttime,
         "updateTime": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     }
@@ -170,9 +191,10 @@ def getWeathertemp():
         with open(_weather_chahe,"r") as file:
             _weather_chahe_json = file.read()
             weather = json.loads(_weather_chahe_json)
-            return  weather['weather'], weather['temp'], weather['humidity']
+            return  weather['weather'], weather['temp'], weather['humidity'], weather['winddirection'],weather['windpower'],weather['reporttime']
     except Exception as e:
         print("gettemp",e)
+
 
 
 
