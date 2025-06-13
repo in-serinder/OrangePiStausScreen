@@ -65,6 +65,6 @@ while True:
             draw.text((0, 30), f'Weather: {getAPI.get_weather_en_description(weather)}', fill="white")
             draw.text((0, 40), f'Temperature: {temp} C', fill="white")
             draw.text((0, 50), f'Humidity: {humidity}', fill="white")
-        # print("Page", (count_3 // 3) % 2)
+
 
     time.sleep(1)
