@@ -146,7 +146,8 @@ def getWeather():
             # return "Offline", "Offline", "Offline"
 
     except Exception as e:
-        print("getWeather",e)
+        # print("getWeather",e)
+        print("无法获取网络天气")
         return getWeathertemp()
 
 
@@ -181,19 +182,20 @@ def weathertemp(citycode,weather,temperature,humidity,reporttime,winddirection,w
         #     with open(_weather_chahe,"w") as file:
         #         file.write(_weather_chahe_json)
     except Exception as e:
-        print(e)
-
+        # print(e)
+        print("无法存储本地天气")
 
 def getWeathertemp():
     try:
         if not os.path.exists(_weather_chahe):
-            weathertemp(_cityCode,"ukonw","unknown","unknown")
+            weathertemp(_cityCode,"unknow","unknow","unknow","unknow","unknow","unknow")
         with open(_weather_chahe,"r") as file:
             _weather_chahe_json = file.read()
             weather = json.loads(_weather_chahe_json)
-            return  weather['weather'], weather['temp'], weather['humidity'], weather['winddirection'],weather['windpower'],weather['reporttime']
+            return weather['weather'], weather['temp'], weather['humidity'], weather['winddirection'],weather['windpower'],weather['reportime']
     except Exception as e:
         print("gettemp",e)
+        return "unknow","unknow","unknow","unknow","unknow","unknow"
 
 
 

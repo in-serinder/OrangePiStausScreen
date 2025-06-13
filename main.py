@@ -59,6 +59,8 @@ while True:
     current_date = now.strftime("%Y-%m-%d")
     current_time = now.strftime("%H:%M:%S")
 
+    # print(getAPI.getWeathertemp())
+
     with canvas(device) as draw:
         draw.text((0, 0), f'{current_date} - {current_time}', fill="white")
         draw.text((0, 10), f'Cpu Usage: {st.get_cpu_usage()}% ({st.get_cpu_temp()} C)', fill="white")
@@ -105,7 +107,7 @@ while True:
                       f'Interent:{st.get_interent_status()} ',
                       fill="white")
             draw.text((0, 40),
-                      f'IP: {st.get_ip_addresses()[1]}',
+                      f'IP: {st.get_ip_addresses()}',
                       fill="white")
             draw.text((0, 50),
                       f'Disk: {st.formatsize(total_alldisk)}/{st.formatsize(used_alldesk)}',
