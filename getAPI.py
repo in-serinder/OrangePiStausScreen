@@ -1,8 +1,13 @@
+import json
+import os.path
+
 import requests
 import jsondeal
 
 _cityCode = jsondeal.get_citycode()
 _Key=jsondeal.get_gaodeApikey()
+_weather_chahe = "weather_chahe"
+
 
 # def getIp():
 #     try:
@@ -95,8 +100,9 @@ def getCityCode():
         if response_citycode.status_code == 200:
             response_citycode = response_citycode.json()
             return response_citycode['adcode']
+
     except Exception as e:
-        print(e)
+        print("No Intneret",e)
         return None
 
 
@@ -106,17 +112,57 @@ def getWeather():
         cityCode = getCityCode()
         if cityCode is None:
             cityCode = _cityCode
-        else:
-            weather = requests.get(
-                f'https://restapi.amap.com/v3/weather/weatherInfo?parameters&city={_cityCode}&key={_Key}')
 
-            if weather.status_code == 200:
-                weather = weather.json()
+        weather = requests.get(
+            f'https://restapi.amap.com/v3/weather/weatherInfo?parameters&city={cityCode}&key={_Key}')
+
+        if weather.status_code == 200:
+            weather = weather.json()
             weather = weather['lives'][0]
+            weathertemp(_cityCode,weather['weather'], weather['temperature'], weather['humidity'])
+            return weather['weather'], weather['temperature'], weather['humidity']
+        else:
+            return getWeathertemp()
+            # return "Offline", "Offline", "Offline"
 
-        return weather['weather'],weather['temperature'],weather['humidity']
     except Exception as e:
-        print(e)
+        print("No Intneret",e)
+        return getWeathertemp()
+
 
 def get_weather_en_description(chinese_term):
     return weather_mapping.get(chinese_term, "Unkow")
+
+
+def weathertemp(citycode,weather,temperature,humidity):
+    _weather_chahe_json = {
+        "cityCode": citycode,
+        "weather": weather,
+        "temp": temperature,
+        "humidity": humidity
+    }
+    try:
+        # if not os.path.exists(_weather_chahe):
+        with open(_weather_chahe,"w") as file:
+            file.write(json.dumps(_weather_chahe_json,ensure_ascii=False))
+
+        # with open(_weather_chahe,"a") as file:
+        #     file.write(_weather_chahe_json)
+        # else:
+        #     with open(_weather_chahe,"w") as file:
+        #         file.write(_weather_chahe_json)
+    except Exception as e:
+        print(e)
+
+
+def getWeathertemp():
+    try:
+        with open(_weather_chahe,"r") as file:
+            _weather_chahe_json = file.read()
+            weather = json.loads(_weather_chahe_json)
+            return  weather['weather'], weather['temp'], weather['humidity']
+    except Exception as e:
+        print(e)
+
+
+

@@ -51,5 +51,4 @@ def get_disk_info():
         return 0, 0, 0
 
 def get_cpu_usage():
-
     return psutil.cpu_percent(interval=1)

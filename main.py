@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import time
 from luma.core.interface.serial import i2c
 from luma.core.render import canvas
@@ -7,9 +9,10 @@ import sys
 
 import getstatus as st
 import getAPI
+import jsondeal as config
 
-# 初始化OLED屏幕
-serial = i2c(port=0, address=0x3C)
+
+serial = i2c(port=config.get_i2c_port(), address=0x3C)
 device = ssd1306(serial)
 
 
@@ -62,6 +65,6 @@ while True:
             draw.text((0, 30), f'Weather: {getAPI.get_weather_en_description(weather)}', fill="white")
             draw.text((0, 40), f'Temperature: {temp} C', fill="white")
             draw.text((0, 50), f'Humidity: {humidity}', fill="white")
-        print("Page", (count_3 // 3) % 2)
+        # print("Page", (count_3 // 3) % 2)
 
     time.sleep(1)

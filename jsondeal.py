@@ -5,7 +5,8 @@ import os
 
 json_data={
     "citycode":'',
-    "gaodeApikey":''
+    "gaodeApikey":'',
+    "I2Cport": 0
 }
 
 configFile = 'config.json'
@@ -24,3 +25,6 @@ def get_citycode():
 
 def get_gaodeApikey():
     return ConfigData['gaodeApikey']
+
+def get_i2c_port():
+    return ConfigData['I2Cport']
