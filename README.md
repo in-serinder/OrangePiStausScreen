@@ -4,7 +4,10 @@
 
 > 硬件状态
  - CPU使用率
+ - CPU温度
  - 内存占用
+ - 交换空间占用
+ - 对外IP
  - 磁盘占用
 
 > 当地天气情况(使用高德天气API和IP定位)
@@ -79,6 +82,18 @@ cd wiringOP
 70: -- -- -- -- -- -- -- --
 ```
 这里显示0x3C
+
+## 使用crontab自启动
+```
+crontab -e
+```
+最后一行添加
+```
+@reboot cd /[路径]/statusscreen && /usr/bin/python3 main.py >> statusscreen.log 2>&1
+<!-- 可以通过pyinstaller编译 -->
+@reboot cd /[路径]/statusscreen && /[路径]/statusscreen/StatusScreen >> /[路径]/statusscreen/statusscreen.log 2>&1
+```
+
 
 ## 最终成果
  ![img](./image/IMG_20250613_132015.jpg)
