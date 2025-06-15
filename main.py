@@ -20,7 +20,7 @@ device = ssd1306(serial)
 count_3 = 0
 count_3600 = 0
 timecount_5=0
-pages_index =[0,1,2,3]
+pages_index =[0,1,2,3] #修改页面顺序
 page_count =0
 # lastpage=0
 
@@ -63,7 +63,7 @@ while True:
 
     with canvas(device) as draw:
         draw.text((0, 0), f'{current_date} - {current_time}', fill="white")
-        draw.text((0, 10), f'Cpu Usage: {st.get_cpu_usage()}% ({st.get_cpu_temp()} C)', fill="white")
+        draw.text((0, 10), f'Cpu: {st.get_cpu_usage()}% ({st.get_cpu_temp()} C)', fill="white")
 
 
 
@@ -94,8 +94,8 @@ while True:
         if pages_index[page_count] == 2:
 
             draw.text((0, 20), f'Weather Status -P2------', fill="white")
-            draw.text((0, 30), f'WindDirection: {getAPI.get_english_direction(winddirection)}', fill="white")
-            draw.text((0, 40), f'WindPower: {getAPI.extract_numbers(windpower)} ', fill="white")
+            draw.text((0, 30), f'W.D: {getAPI.get_english_direction(winddirection)}', fill="white")
+            draw.text((0, 40), f'W.P: {getAPI.extract_numbers(windpower)} ', fill="white")
             draw.text((0, 50), f'R.T: {reporttime}', fill="white")
 
 
