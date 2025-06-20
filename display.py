@@ -167,7 +167,7 @@ async def update_display():
 
             if pages_index[page_count] == 4:
                 draw.text((0, 20), f'Network Status ---------', fill="white")
-                for i,network in network_list:
+                for i,network in enumerate(network_list):
                     draw.text((0, 30 + i*10), f'{network}', fill="white")
 
 
