@@ -28,3 +28,6 @@ def get_gaodeApikey():
 
 def get_i2c_port():
     return ConfigData['I2Cport']
+
+def get_switch_time():
+    return ConfigData['switchtime']

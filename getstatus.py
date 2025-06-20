@@ -1,3 +1,8 @@
+from datetime import datetime
+import datetime as dt
+import re
+import urllib
+
 import psutil
 import socket
 
@@ -55,9 +60,9 @@ def get_cpu_usage():
 
 def get_interent_status():
     try:
-        socket.create_connection(("8.8.8.8",52),timeout=5)
+        urllib.request.urlopen('https://www.archlinux.org')
         return True
-    except OSError:
+    except:
         return False
 
 def get_ip_addresses():
@@ -65,7 +70,9 @@ def get_ip_addresses():
     for interface, addrs in psutil.net_if_addrs().items():
         for addr in addrs:
             if addr.family == socket.AF_INET:
-                ip_addresses.append(addr.address)
+                if not addr.address=="127.0.0.1":
+                    ip_addresses.append(f'{interface}-{addr.address}')
+
     return ip_addresses
 
 
@@ -83,4 +90,24 @@ def get_alldisk_usage():
 
 
 def get_cpu_temp():
-    return psutil.sensors_temperatures().get('coretemp')
+    try:
+        temps = psutil.sensors_temperatures()
+        if 'cpu_thermal' in temps:
+            return temps['cpu_thermal'][0].current
+        else:
+            print("未检测到CPU温度传感器")
+            return None
+    except Exception as e:
+        print(f"获取CPU温度失败: {e}")
+        return None
+
+def get_uptime():
+    boot_time = datetime.fromtimestamp(psutil.boot_time())
+    uptime = datetime.now() - boot_time
+    days = uptime.days
+    seconds = uptime.seconds
+    hours = seconds // 3600
+    minutes = (seconds % 3600) // 60
+    seconds = seconds % 60
+    return f"D:{days} H：{hours} M:{minutes} S:{seconds}"
+

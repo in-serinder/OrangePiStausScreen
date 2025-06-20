@@ -1,5 +1,6 @@
 {
   "citycode": 530427,
   "gaodeApikey": " ",
-  "I2Cport": 0
+  "I2Cport": 0,
+  "switchtime": 5
 }

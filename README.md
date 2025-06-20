@@ -7,7 +7,7 @@
  - CPU温度
  - 内存占用
  - 交换空间占用
- - 对外IP
+ - 接口IP
  - 磁盘占用
 
 > 当地天气情况(使用高德天气API和IP定位)
@@ -19,7 +19,8 @@
 ```
   "citycode": , //指定地区城市码（或Acode）
   "gaodeApikey": " ", //高德Api密钥
-  "I2Cport": 0 //I2c总线号
+  "I2Cport": 0 ,//I2c总线号
+  "switchtime": 5 //页面切换时间
 ```
 
 ## 接线定义 
