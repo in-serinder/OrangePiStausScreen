@@ -4,6 +4,7 @@ import time
 from luma.core.interface.serial import i2c
 from luma.core.render import canvas
 from luma.oled.device import ssd1306
+from PIL import ImageFont
 from datetime import datetime
 
 import asyncio
@@ -22,7 +23,7 @@ count_3 = 0
 count_3600 = 0
 count_60 = 0
 timecount_=0
-pages_index =[0,1,2,3,4] #页面播放顺序
+pages_index =[0,1,2,3,4,5] #页面播放顺序
 page_count =0
 page_switch_time = config.get_switch_time()
 # lastpage=0
@@ -35,6 +36,7 @@ total_disk, used_disk, disk_percent = st.get_disk_info()
 total_alldisk,used_alldesk=st.get_alldisk_usage()
 network_list,interent_status = st.get_ip_addresses(),st.get_interent_status()
 uptime = st.get_uptime()
+disks = st.get_disks_usage()
 
 
 async def update_data():
@@ -74,6 +76,7 @@ async def update_display():
     global weather, temp, humidity, winddirection, windpower, reporttime
     global network_list,interent_status
     global uptime
+    global disks
 
 
     while True:
@@ -88,6 +91,7 @@ async def update_display():
             # total_alldisk, used_alldesk = st.get_alldisk_usage()
             await update_data()
             uptime = st.get_uptime()
+            disks = st.get_disks_usage()
             count_3 = 0
 
         # 页面切换
@@ -96,7 +100,7 @@ async def update_display():
             timecount_ = 0
 
 
-        if page_count >=5 :
+        if page_count >=len(pages_index) :
             page_count=0
 
         if count_60 >=60:
@@ -115,7 +119,7 @@ async def update_display():
 
         with canvas(device) as draw:
             draw.text((0, 0), f'{current_date} - {current_time}', fill="white")
-            draw.text((0, 10), f'Cpu Usage: {st.get_cpu_usage()}% ({st.get_cpu_temp()} C)', fill="white")
+            draw.text((0, 10), f'Cpu: {st.get_cpu_usage()}% ({st.get_cpu_temp()} °C)', fill="white")
 
 
 
@@ -129,7 +133,7 @@ async def update_display():
                           f'Swap: {(used_swap / total_swap) * 100:.1f}%',
                           fill="white")
                 draw.text((0, 50),
-                          f'Disk: {st.formatsize(total_disk)}/{st.formatsize(used_disk)} ',
+                          f'/: {st.formatsize(total_disk)}/{st.formatsize(used_disk)} ',
                           fill="white")
 
 
@@ -138,8 +142,8 @@ async def update_display():
 
                 draw.text((0, 20), f'Weather Status -P1------', fill="white")
                 draw.text((0, 30), f'Weather: {getAPI.get_weather_en_description(weather)}', fill="white")
-                draw.text((0, 40), f'Temperature: {temp} C', fill="white")
-                draw.text((0, 50), f'Humidity: {humidity}', fill="white")
+                draw.text((0, 40), f'Temperature: {temp} °C', fill="white")
+                draw.text((0, 50), f'Humidity: {humidity} %', fill="white")
 
 
 
@@ -169,6 +173,11 @@ async def update_display():
                 draw.text((0, 20), f'Network Status ---------', fill="white")
                 for i,network in enumerate(network_list):
                     draw.text((0, 30 + i*10), f'{network}', fill="white")
+
+            if pages_index[page_count] == 5:
+                draw.text((0, 20), f'Disk Status ---------', fill="white")
+                for i,disk in enumerate(disks):
+                    draw.text((0, 30 + i*10), f'{disk}', fill="white")
 
 
 #########################################################################################################

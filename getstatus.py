@@ -1,3 +1,4 @@
+import subprocess
 from datetime import datetime
 import datetime as dt
 import re
@@ -90,15 +91,13 @@ def get_alldisk_usage():
 
 
 def get_cpu_temp():
+
     try:
-        temps = psutil.sensors_temperatures()
-        if 'cpu_thermal' in temps:
-            return temps['cpu_thermal'][0].current
-        else:
-            print("未检测到CPU温度传感器")
-            return None
+        temps = subprocess.check_output(["cat", "/sys/class/thermal/thermal_zone0/temp"]).decode("utf-8")
+        cpu_temp = float(temps) / 1000
+        return f'{cpu_temp:.2f}'
     except Exception as e:
-        print(f"获取CPU温度失败: {e}")
+        print(f"get Cpu Temperature Failed: {e}")
         return None
 
 def get_uptime():
@@ -109,5 +108,15 @@ def get_uptime():
     hours = seconds // 3600
     minutes = (seconds % 3600) // 60
     seconds = seconds % 60
-    return f"D:{days} H：{hours} M:{minutes} S:{seconds}"
+    return f"{days}D {hours}H {minutes}M {seconds}S"
 
+
+def get_disks_usage():
+    disks=[]
+    disk_usage = psutil.disk_partitions()
+    for partition in disk_usage:
+        if not partition.mountpoint == '/var/log.hdd': #忽略
+            usage = psutil.disk_usage(partition.mountpoint)
+            disks.append(f'{partition.mountpoint}: {(usage.used/usage.total)*100:.2f} %')
+
+    return disks

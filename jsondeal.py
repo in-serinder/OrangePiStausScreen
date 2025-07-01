@@ -6,7 +6,8 @@ import os
 json_data={
     "citycode":'',
     "gaodeApikey":'',
-    "I2Cport": 0
+    "I2Cport": 0,
+    "switchtime": 5
 }
 
 configFile = 'config.json'
